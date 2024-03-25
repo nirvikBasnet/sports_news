@@ -34,17 +34,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.nirviklabs.sportsnews.data.remote.Article
+import com.nirviklabs.sportsnews.navigation.NavigationItem
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-fun ArticleCard(article: Article,context: Context) {
+fun ArticleCard(article: Article,context: Context,navController: NavController) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth().clickable {
+                val encodedUrl = URLEncoder.encode(article.url, StandardCharsets.UTF_8.toString())
+                     navController.navigate("Browser/$encodedUrl")
+            },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -54,7 +61,7 @@ fun ArticleCard(article: Article,context: Context) {
             Column(
                 modifier = Modifier
                     .weight(2f)
-                    .clickable { openUrl(context, article.url) }
+
             ) {
                 val truncatedTitle = truncateString(article.title, 80)
                 Text(
@@ -76,11 +83,6 @@ fun ArticleCard(article: Article,context: Context) {
                 Text(
                     text = "Read More",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.DarkGray,
-                    modifier = Modifier.clickable {
-                        // When clicked, open the URL in the default browser
-                        openUrl(context,article.url)
-                    }
                 )
             }
 
@@ -107,15 +109,10 @@ private fun truncateString(title: String, maxLength: Int): String {
 }
 
 @Composable
-fun ArticleList(articles: List<Article>,context: Context) {
+fun ArticleList(articles: List<Article>,context: Context, navController: NavController) {
     LazyColumn {
         items(articles){
-            ArticleCard(it, context )
+            ArticleCard(it, context, navController )
         }
     }
-}
-
-private fun openUrl(context: Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(intent)
 }

@@ -33,6 +33,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.nirviklabs.sportsnews.navigation.AppNavHost
 import com.nirviklabs.sportsnews.ui.theme.ArticleList
 import com.nirviklabs.sportsnews.ui.theme.NewsScreenState
 import com.nirviklabs.sportsnews.ui.theme.NewsViewModel
@@ -49,13 +53,14 @@ class MainActivity : ComponentActivity() {
         )
         installSplashScreen()
         setContent {
+            val navController = rememberNavController()
             SportsNewsTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                  NewsScreen()
+                  AppNavHost(navController=navController)
                 }
             }
         }
@@ -64,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewsScreen(newsViewModel: NewsViewModel = viewModel()) {
+fun NewsScreen(navController: NavController,newsViewModel: NewsViewModel = viewModel()) {
     val newsState by remember (newsViewModel.newsState) { newsViewModel.newsState }
 
 
@@ -87,7 +92,7 @@ fun NewsScreen(newsViewModel: NewsViewModel = viewModel()) {
                    // Display news list
                    val news = newsState as NewsScreenState.Success
 
-                   ArticleList(news.articles, LocalContext.current)
+                   ArticleList(news.articles, LocalContext.current,navController)
                }
                is NewsScreenState.Error -> {
                    // Show error message
@@ -106,4 +111,6 @@ fun NewsScreen(newsViewModel: NewsViewModel = viewModel()) {
         newsViewModel.fetchNews()
     }
 }
+
+
 

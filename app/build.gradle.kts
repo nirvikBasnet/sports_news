@@ -84,6 +84,9 @@ dependencies {
     implementation (libs.coil.compose)
     //webkit - for browser inside the app
     implementation (libs.androidx.webkit)
+    //Navigation
+    implementation (libs.androidx.navigation.compose)
+
 
 
 
